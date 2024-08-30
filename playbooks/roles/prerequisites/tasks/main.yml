@@ -4,6 +4,31 @@
 # Use a defaults/main.yml file to define package names and/or versions if necessary
 # Use a handlers/main.yml file to enable and start nginx
 
+- name: "Get Variables"
+  include_vars:
+    file: "../../defaults/main.yml"
+
+- name: Update and upgrade the system
+  become: yes
+  apt: 
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
+
+- name: Install python3
+  become: yes
+  apt:
+    name: "{{python_package}}"
+    state: present
+
+- name: Install nginx
+  become: yes
+  apt:
+    name: "{{nginx_package}}"
+    state: present
+  notify: Enable and start nginx
+
+
 - name: Print message
   ansible.builtin.debug:
     msg: Please remove me
