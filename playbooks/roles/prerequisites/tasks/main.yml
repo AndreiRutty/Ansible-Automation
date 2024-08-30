@@ -6,7 +6,7 @@
 
 - name: "Get Variables"
   include_vars:
-    file: "../../defaults/main.yml"
+    file: "../defaults/main.yml"
 
 - name: Update and upgrade the system
   become: yes
