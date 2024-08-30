@@ -2,6 +2,65 @@
 # Add tasks to automate the steps done during weeks 5 and 6 here
 # Use the defaults/ and files/ directories too
 
+- name: "Get Variables"
+  include_vars:
+    file: "../defaults/main.yml"
+
+- name: Clone LAMP Stack Project
+  become: yes
+  git:
+    repo: "{{git_url}}"
+    dest: "{{project_dir}}"
+    version: "master"
+    
+- name: Rename .env.sample to .env
+  become: yes
+  copy:
+    src: "{{project_dir}}/.env.sample"
+    dest: "{{envfile_dir}}"
+
+- name: Deleting .env.sample file
+  become: yes
+  file:
+    path: "{{project_dir}}/.env.sample"
+    state: absent
+
+- name: Adding required variables to .env file
+  become: yes
+  template:
+    src: ../files/.env.j2
+    dest: "{{envfile_dir}}"
+
+- name: Adding PHP Extension to Dockerfile
+  become: yes
+  template: 
+    src: ../files/Dockerfile.j2
+    dest: "{{dockerfile_dir}}"
+
+- name: Connecting SQL with php file
+  become: yes
+  template:
+    src: ../files/index.php.j2
+    dest: "{{project_dir}}/webroot/index.php"
+
+- name: Creating docker-compose.yml file
+  become: yes
+  file:
+    path: "{{project_dir}}/docker-compose.yml"
+    state: touch
+
+- name: Adding Services to docker-compose
+  become: yes
+  template:
+    src: ../files/docker-compose.j2
+    dest: "{{project_dir}}/docker-compose.yml"    
+
+- name: Docker Compose
+  command: docker-compose up -d
+  args:
+    chdir: "{{project_dir}}"
+
 - name: Print message
   ansible.builtin.debug:
     msg: Please remove me
+

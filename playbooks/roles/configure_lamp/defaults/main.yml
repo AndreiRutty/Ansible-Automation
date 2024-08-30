@@ -1,0 +1,6 @@
+
+# Paths
+git_url: "https://github.com/EdgeKing810/interns-docker-compose-lamp.git"
+project_dir: "interns-docker-compose-lamp"
+dockerfile_dir: "interns-docker-compose-lamp/bin/webserver/Dockerfile"
+envfile_dir: "{{project_dir}}/.env"
