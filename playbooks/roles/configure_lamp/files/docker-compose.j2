@@ -4,7 +4,7 @@ services:
       context: "./bin/webserver"
       args:
         PHP_VERSION: ${PHP_VERSION}
-    container_name: 'interns-webserver'
+    container_name: 'webserver'
     restart: 'always'
     ports:
       - "${HOST_MACHINE_HTTP_PORT}:80"
@@ -21,7 +21,7 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
   mysql:
     image: '${DB_SERVER}'
-    container_name: 'interns-db'
+    container_name: 'mysql'
     restart: 'always'
     ports:
       - "${HOST_MACHINE_MYSQL_PORT}:3306"
@@ -35,7 +35,7 @@ services:
       MYSQL_PASSWORD: "${DB_PASSWORD}"
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: 'interns-phpmyadmin'
+    container_name: 'phpmyadmin'
     restart: 'always'
     links:
       - mysql

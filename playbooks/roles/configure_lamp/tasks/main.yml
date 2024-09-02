@@ -27,9 +27,15 @@
 
 - name: Adding required variables to .env file
   become: yes
-  template:
-    src: ../files/.env.j2
-    dest: "{{envfile_dir}}"
+  blockinfile:
+    path: "{{envfile_dir}}"
+    marker: ""
+    insertafter: EOF
+    block: |
+      DB_USER=user_db
+      DB_PASSWORD=password1234
+      DB_ROOT_PASSWORD=root_password1234
+      DB_DATABASE=mydatabase
 
 - name: Adding PHP Extension to Dockerfile
   become: yes
@@ -60,7 +66,7 @@
   args:
     chdir: "{{project_dir}}"
 
-- name: Print message
-  ansible.builtin.debug:
-    msg: Please remove me
+# - name: Print message
+#   ansible.builtin.debug:
+#     msg: Please remove me
 
