@@ -4,6 +4,40 @@
 # Add vhosts and other necessary files in the files/ and/or templates/ directories as appropriate
 # Use handlers to restart nginx if necessary
 
-- name: Print message
-  ansible.builtin.debug:
-    msg: Please remove me
+# - name: Print message
+#   ansible.builtin.debug:
+#     msg: Please remove me
+
+- name: Create Nginx Directory
+  become: yes
+  file:
+    path: /etc/nginx/ssl
+    state: directory
+    
+- name: Create private key (RSA, 4096)
+  become: yes
+  community.crypto.openssl_privatekey:
+    path: /etc/nginx/ssl/nginx-pk.key
+  
+- name: Create a self-signed certificate
+  become: yes
+  community.crypto.x509_certificate:
+    path: /etc/nginx/ssl/nginx-certificate.crt
+    privatekey_path: /etc/nginx/ssl/nginx-pk.key
+    provider: selfsigned
+
+# - name: Setting up virtual host for docker-lamp web service
+#   become: yes
+#   copy:
+#     src: files/default.conf
+#     dest: /etc/nginx/sites-enabled/
+#   notify: Restart Nginx
+
+- name: Configure Nginx as reverse proxy
+  become: yes
+  copy:
+    src: files/default.conf
+    dest: /etc/nginx/sites-available/default
+  notify: Restart Nginx
+
+
