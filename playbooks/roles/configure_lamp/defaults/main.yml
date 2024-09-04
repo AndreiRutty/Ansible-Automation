@@ -1,6 +1,9 @@
+DB_USERNAME: android_rust
+GENERATED_PASSWORD: "{{ lookup('file', '/etc/nginx/password.txt') }}"
+DB_NAME: mydatabase
 
 # Paths
 git_url: "https://github.com/EdgeKing810/interns-docker-compose-lamp.git"
-project_dir: "interns-docker-compose-lamp"
+project_dir: "/home/andrei/interns-docker-compose-lamp"
 dockerfile_dir: "{{project_dir}}/bin/webserver/Dockerfile"
 envfile_dir: "{{project_dir}}/.env"

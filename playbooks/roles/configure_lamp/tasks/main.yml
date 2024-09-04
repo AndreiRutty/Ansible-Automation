@@ -6,24 +6,43 @@
   include_vars:
     file: "../defaults/main.yml"
 
+- name: Checking if repo was already cloned
+  become: yes
+  stat:
+    path: "{{project_dir}}"
+  register: repo
+
 - name: Clone LAMP Stack Project
   become: yes
   git:
     repo: "{{git_url}}"
     dest: "{{project_dir}}"
     version: "master"
+  when: not repo.stat.exists
     
 - name: Rename .env.sample to .env
   become: yes
   copy:
     src: "{{project_dir}}/.env.sample"
     dest: "{{envfile_dir}}"
+  when: not repo.stat.exists
 
 - name: Deleting .env.sample file
   become: yes
   file:
     path: "{{project_dir}}/.env.sample"
     state: absent
+  when: not repo.stat.exists
+
+- name: Generate a Password
+  set_fact:
+    generated_password: "{{ lookup('password', '/dev/null', chars=['ascii_letters', 'digits'], length=8 ) }}"
+  
+- name: Storing password in a file
+  copy:
+    content: "{{generated_password}}"
+    dest: /etc/nginx/password.txt
+    mode: '0600'
 
 - name: Adding required variables to .env file
   become: yes
@@ -32,36 +51,41 @@
     marker: ""
     insertafter: EOF
     block: |
-      DB_USER=user_db
-      DB_PASSWORD=password1234
-      DB_ROOT_PASSWORD=password1234
-      DB_DATABASE=mydatabase
+      DB_USERNAME="{{ DB_USERNAME }}"
+      DB_PASSWORD="{{ GENERATED_PASSWORD }}"
+      DB_ROOT_PASSWORD="{{ GENERATED_PASSWORD }}"
+      DB_NAME="{{ DB_NAME }}"
+  when: not repo.stat.exists
 
 - name: Adding PHP Extension to Dockerfile
   become: yes
   copy: 
     src: ../files/Dockerfile
-    dest: "{{dockerfile_dir}}"
+    dest: "{{ dockerfile_dir }}"
     mode: '0644'
+  when: not repo.stat.exists
 
 - name: Connecting SQL with php file
   become: yes
-  copy:
-    src: ../files/index.php
-    dest: "{{project_dir}}/webroot/index.php"
-    mode: '0644'
+  lineinfile:
+    path: "{{ project_dir }}/webroot/index.php"
+    regex: '\$link = mysqli_connect\("mysql", "root", "tiger", null\);'
+    line: '$link = mysqli_connect("mysql", "{{ DB_USERNAME }}", "{{ GENERATED_PASSWORD }}", "{{ DB_NAME }}");'
+  when: not repo.stat.exists
 
 - name: Creating docker-compose.yml file
   become: yes
   file:
     path: "{{project_dir}}/docker-compose.yml"
     state: touch
+  when: not repo.stat.exists
 
 - name: Adding Services to docker-compose
   become: yes
   copy:
     src: ../files/docker-compose.yml
-    dest: "{{project_dir}}/docker-compose.yml"    
+    dest: "{{project_dir}}/docker-compose.yml"  
+  when: not repo.stat.exists  
 
 - name: Docker Compose
   command: docker-compose up -d
