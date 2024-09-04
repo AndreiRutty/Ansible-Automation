@@ -8,6 +8,7 @@
   include_vars:
     file: "../defaults/main.yml"
 
+# Updating and upgrading the system
 - name: Update and upgrade the system
   become: yes
   apt: 
@@ -21,14 +22,22 @@
     name: "{{python_package}}"
     state: present
 
+- name: Installing virtualenv
+  become: yes
+  pip:
+    name: "{{python_virtualenv_package}}"
+    executable: pip3
+
 - name: Install nginx
   become: yes
   apt:
     name: "{{nginx_package}}"
     state: present
-  notify: Enable and start nginx
+  notify: 
+    - Enable Nginx
+    - Start Nginx
 
 
-- name: Print message
-  ansible.builtin.debug:
-    msg: Please remove me
+# - name: Print message
+#   ansible.builtin.debug:
+#     msg: Please remove me

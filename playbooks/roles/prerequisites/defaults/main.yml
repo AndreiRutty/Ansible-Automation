@@ -1,3 +1,4 @@
 # Packages
 python_package: python3
 nginx_package: nginx
+python_virtualenv_package: virtualenv
