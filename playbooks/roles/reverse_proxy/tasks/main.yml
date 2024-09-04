@@ -17,21 +17,14 @@
 - name: Create private key (RSA, 4096)
   become: yes
   community.crypto.openssl_privatekey:
-    path: /etc/nginx/ssl/nginx-pk.key
+    path: "{{ pk_dir }}"
   
 - name: Create a self-signed certificate
   become: yes
   community.crypto.x509_certificate:
-    path: /etc/nginx/ssl/nginx-certificate.crt
-    privatekey_path: /etc/nginx/ssl/nginx-pk.key
+    path: "{{ certificate_dir }}"
+    privatekey_path: "{{ pk_dir }}"
     provider: selfsigned
-
-# - name: Setting up virtual host for docker-lamp web service
-#   become: yes
-#   copy:
-#     src: files/default.conf
-#     dest: /etc/nginx/sites-enabled/
-#   notify: Restart Nginx
 
 - name: Configure Nginx as reverse proxy
   become: yes
@@ -39,5 +32,12 @@
     src: files/default.conf
     dest: /etc/nginx/sites-available/default
   notify: Restart Nginx
+
+- name: Creating a hard link in sites-enabled
+  become: yes
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
 
 

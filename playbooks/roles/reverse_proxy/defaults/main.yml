@@ -1,0 +1,2 @@
+certificate_dir: /etc/nginx/ssl/nginx-certificate.crt
+pk_dir:  /etc/nginx/ssl/nginx-pk.key
