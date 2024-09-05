@@ -1,3 +1,4 @@
+---
 DB_USERNAME: android_rust
 GENERATED_PASSWORD: "{{ lookup('file', '/etc/nginx/password.txt') }}"
 DB_NAME: mydatabase
