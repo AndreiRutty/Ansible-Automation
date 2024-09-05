@@ -16,19 +16,17 @@
     update_cache: yes
     cache_valid_time: 86400
 
-- name: Install python3
+- name: Installing python3 and its packages
   become: yes
   apt:
-    name: "{{python_package}}"
+    name: "{{ item }}"
     state: present
+  with_items:
+    - "{{ python_package }}"
+    - "{{ python_venv }}"
+    - "{{ python_virtualenv }}"
 
-- name: Installing virtualenv
-  become: yes
-  pip:
-    name: "{{python_virtualenv_package}}"
-    executable: pip3
-
-- name: Install nginx
+- name: Installing nginx
   become: yes
   apt:
     name: "{{nginx_package}}"
