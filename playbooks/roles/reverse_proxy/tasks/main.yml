@@ -18,6 +18,8 @@
   become: yes
   community.crypto.openssl_privatekey:
     path: "{{ pk_dir }}"
+    type: RSA
+    size: 4096
   
 - name: Create a self-signed certificate
   become: yes
