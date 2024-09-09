@@ -10,8 +10,8 @@ instructions to build the docker-compose.yml files.
 
 ```bash
 # Clone the project
-git clone https://github.com/EdgeKing810/interns-ansible-automation.git
-cd interns-ansible-automation/
+git clone https://github.com/AndreiRutty/Ansible-Automation.git
+cd Ansible-Automation
 
 # Make sure you have python installed
 sudo apt update
